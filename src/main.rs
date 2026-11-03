@@ -1,16 +1,24 @@
-//! SigmaOS-libpng - SigmaOS Component
-//!
-//! This component is part of the SigmaOS operating system,
-//! inspired by Arch Linux and Debian architecture.
+use anyhow::Result;
+use clap::Parser;
+use libpng::libpng;
 
-use std::process;
+#[derive(Parser)]
+struct Cli {
+    #[arg(short, long)]
+    no_hw_accel: bool,
+}
 
-fn main() {
-    println!("SigmaOS SigmaOS-libpng");
-    println!("Version: 0.1.0");
-    println!("Inspired by: Arch Linux and Debian");
-    println!();
-    println!("This component provides essential functionality for SigmaOS.");
-    println!("Following modular design principles from Arch Linux");
-    println!("and stability focus from Debian.");
+fn main() -> Result<()> {
+    let cli = Cli::parse();
+    let config = libpng::Config { 
+        hardware_acceleration: !cli.no_hw_accel, 
+        ..Default::default() 
+    };
+    let mut component = libpng::new(config);
+    
+    component.initialize()?;
+    component.run()?;
+    
+    println!("SigmaOS-libpng ready");
+    Ok(())
 }
